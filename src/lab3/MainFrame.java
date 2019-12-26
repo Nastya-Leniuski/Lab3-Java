@@ -293,7 +293,31 @@ public class MainFrame extends JFrame {
             }
         }
     });
-    
+    // Создать кнопку "Очистить поля"
+    JButton buttonReset = new JButton("Очистить поля");
+
+    // Задать действие на нажатие "Очистить поля" и привязать к кнопке
+        buttonReset.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            // Установить в полях ввода значения по умолчанию
+            textFieldFrom.setText("0.0");
+            textFieldTo.setText("1.0");
+            textFieldStep.setText("0.1");
+            // Удалить все вложенные элементы контейнера
+            hBoxResult.removeAll();
+            // Добавить в контейнер пустую панель
+            hBoxResult.add(new JPanel());
+            // Пометить элементы меню как недоступные
+            saveToTextMenuItem.setEnabled(false);
+            saveToGraphicsMenuItem.setEnabled(false);
+            searchValueMenuItem.setEnabled(false);
+            saveToCSVMenuItem.setEnabled(false);
+            searchPrimeNumberItem.setEnabled(false);
+            // Обновить область содержания главного окна
+            getContentPane().validate();
+        }
+    });
     // Поместить созданные кнопки в контейнер
     Box hBoxButtons = Box.createHorizontalBox();
         hBoxButtons.setBorder(BorderFactory.createBevelBorder(1));
