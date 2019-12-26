@@ -176,8 +176,229 @@ public class MainFrame extends JFrame {
                 getContentPane().repaint();
             }
         };
-        searchPrimeNumberItem = tableMenu.add(searchPrimeNumberAction);
+
+    searchPrimeNumberItem = tableMenu.add(searchPrimeNumberAction);
         searchPrimeNumberItem.setEnabled(false);
+
+
+    Action referenceMenuAction = new AbstractAction("О программе") {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                AboutFrame.main(null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    referenceMenuItem = referenceMenu.add(referenceMenuAction);
+        referenceMenuItem.setEnabled(true);
+
+    // Создать область с полями ввода для границ отрезка и шага
+    // Создать подпись для ввода левой границы отрезка
+    JLabel labelForFrom = new JLabel("X изменяется на интервале от:");
+    // Создать текстовое поле для ввода значения длиной в 10 символов
+    // со значением по умолчанию 0.0
+    textFieldFrom = new JTextField("0.0", 10);
+    // Установить максимальный размер равный предпочтительному, чтобы
+    // предотвратить увеличение размера поля ввода
+        textFieldFrom.setMaximumSize(textFieldFrom.getPreferredSize());
+    // Создать подпись для ввода левой границы отрезка
+    JLabel labelForTo = new JLabel("до:");
+    // Создать текстовое поле для ввода значения длиной в 10 символов
+    // со значением по умолчанию 1.0
+    textFieldTo = new JTextField("1.0", 10);
+    // Установить максимальный размер равный предпочтительному, чтобы
+    // предотвратить увеличение размера поля ввода
+        textFieldTo.setMaximumSize(textFieldTo.getPreferredSize());
+    // Создать подпись для ввода шага табулирования
+    JLabel labelForStep = new JLabel("с шагом:");
+    // Создать текстовое поле для ввода значения длиной в 10 символов
+    // со значением по умолчанию 1.0
+    textFieldStep = new JTextField("0.1", 10);
+    // Установить максимальный размер равный предпочтительному, чтобы
+    // предотвратить увеличение размера поля ввода
+        textFieldStep.setMaximumSize(textFieldStep.getPreferredSize());
+    // Создать контейнер 1 типа "коробка с горизонтальной укладкой"
+    Box hBoxRange = Box.createHorizontalBox();
+    // Задать для контейнера тип рамки "объѐмная"
+        hBoxRange.setBorder(BorderFactory.createBevelBorder(1));
+    // Добавить "клей" C1-H1
+        hBoxRange.add(Box.createHorizontalGlue());
+    // Добавить подпись "От"
+        hBoxRange.add(labelForFrom);
+    // Добавить "распорку" C1-H2
+        hBoxRange.add(Box.createHorizontalStrut(10));
+    // Добавить поле ввода "От"
+        hBoxRange.add(textFieldFrom);
+    // Добавить "распорку" C1-H3
+        hBoxRange.add(Box.createHorizontalStrut(20));
+    // Добавить подпись "До"
+        hBoxRange.add(labelForTo);
+    // Добавить "распорку" C1-H4
+        hBoxRange.add(Box.createHorizontalStrut(10));
+    // Добавить поле ввода "До"
+        hBoxRange.add(textFieldTo);
+    // Добавить "распорку" C1-H5
+        hBoxRange.add(Box.createHorizontalStrut(20));
+    // Добавить подпись "с шагом"
+        hBoxRange.add(labelForStep);
+    // Добавить "распорку" C1-H6
+        hBoxRange.add(Box.createHorizontalStrut(10));
+    // Добавить поле для ввода шага табулирования
+        hBoxRange.add(textFieldStep);
+    // Добавить "клей" C1-H7
+        hBoxRange.add(Box.createHorizontalGlue());
+
+    // Установить предпочтительный размер области равным удвоенному
+    // минимальному, чтобы при компоновке область совсем не сдавили
+        hBoxRange.setPreferredSize(new Dimension(new Double(hBoxRange.getMaximumSize().getWidth()).intValue(), new Double(hBoxRange.getMinimumSize().getHeight()).intValue() * 2));
+
+    // Установить область в верхнюю (северную) часть компоновки
+    getContentPane().add(hBoxRange, BorderLayout.NORTH);
+    // Создать кнопку "Вычислить"
+    JButton buttonCalc = new JButton("Вычислить");
+    // Задать действие на нажатие "Вычислить" и привязать к кнопке
+        buttonCalc.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                // Считать значения начала и конца отрезка, шага
+                Double from = Double.parseDouble(textFieldFrom.getText());
+                Double to = Double.parseDouble(textFieldTo.getText());
+                Double step = Double.parseDouble(textFieldStep.getText());
+                // На основе считанных данных создать новый экземпляр модели таблицы
+                data = new GornerTableModel(from, to, step, MainFrame.this.coefficients);
+                // Создать новый экземпляр таблицы
+                JTable table = new JTable(data);
+                // Установить в качестве визуализатора ячеек для класса Double разработанный визуализатор
+                table.setDefaultRenderer(Double.class, renderer);
+                // Установить размер строки таблицы в 30 пикселов
+                table.setRowHeight(30);
+                // Удалить все вложенные элементы из контейнера hBoxResult
+                hBoxResult.removeAll();
+                // Добавить в hBoxResult таблицу, "обѐрнутую" в панель с полосами прокрутки
+                hBoxResult.add(new JScrollPane(table));
+                // Обновить область содержания главного окна
+                getContentPane().validate();
+                // Пометить ряд элементов меню как доступных
+                saveToTextMenuItem.setEnabled(true);
+                saveToGraphicsMenuItem.setEnabled(true);
+                searchValueMenuItem.setEnabled(true);
+                saveToCSVMenuItem.setEnabled(true);
+                searchPrimeNumberItem.setEnabled(true);
+            } catch (NumberFormatException ex) {
+                // В случае ошибки преобразования чисел показать сообщение об ошибке
+                JOptionPane.showMessageDialog(MainFrame.this, "Ошибка в формате записи числа с плавающей точкой", "Ошибочный формат числа", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    });
+    
+    // Поместить созданные кнопки в контейнер
+    Box hBoxButtons = Box.createHorizontalBox();
+        hBoxButtons.setBorder(BorderFactory.createBevelBorder(1));
+        hBoxButtons.add(Box.createHorizontalGlue());
+        hBoxButtons.add(buttonCalc);
+        hBoxButtons.add(Box.createHorizontalStrut(30));
+        hBoxButtons.add(buttonReset);
+        hBoxButtons.add(Box.createHorizontalGlue());
+    // Установить предпочтительный размер области равным удвоенному минимальному, чтобы при
+    // компоновке окна область совсем не сдавили
+        hBoxButtons.setPreferredSize(new Dimension(new Double(hBoxButtons.getMaximumSize().getWidth()).intValue(), new Double(hBoxButtons.getMinimumSize().getHeight()).intValue() * 2));
+    // Разместить контейнер с кнопками в нижней (южной) области граничной компоновки
+    getContentPane().add(hBoxButtons, BorderLayout.SOUTH);
+    // Область для вывода результата пока что пустая
+    hBoxResult = Box.createHorizontalBox();
+        hBoxResult.add(new JPanel());
+    // Установить контейнер hBoxResult в главной (центральной) области граничной компоновки
+    getContentPane().add(hBoxResult, BorderLayout.CENTER);
+}
+
+    protected void saveToGraphicsFile(File selectedFile) {
+        try {
+            // Создать новый байтовый поток вывода, направленный в указанный файл
+            DataOutputStream out = new DataOutputStream(new FileOutputStream(selectedFile));
+            // Записать в поток вывода попарно значение X в точке, значение многочлена в точке
+            for (int i = 0; i < data.getRowCount(); i++) {
+                out.writeDouble((Double) data.getValueAt(i, 0));
+                out.writeDouble((Double) data.getValueAt(i, 1));
+            }
+            out.close();
+        } catch (Exception e) {
+            // Исключительную ситуацию "ФайлНеНайден" в данном случае можно не обрабатывать,
+            // так как мы файл создаѐм, а не открываем для чтения
+        }
     }
 
+    protected void saveToTextFile(File selectedFile) {
+        try {
+            // Создать новый символьный поток вывода, направленный в указанный файл
+            PrintStream out = new PrintStream(selectedFile);
+            // Записать в поток вывода заголовочные сведения
+            out.println("Результаты табулирования многочлена по схеме Горнера");
+            out.print("Многочлен: ");
+            for (int i = 0; i < coefficients.length; i++) {
+                out.print(coefficients[i] + "*X^" + (coefficients.length - i - 1));
+                if (i != coefficients.length - 1)
+                    out.print(" + ");
+            }
+            out.println("");
+            out.println("Интервал от " + data.getFrom() + " до " + data.getTo() + " с шагом " + data.getStep());
+            out.println("====================================================");
+            // Записать в поток вывода значения в точках
+            for (int i = 0; i < data.getRowCount(); i++) {
+                out.println("Значение в точке " + data.getValueAt(i, 0) + " равно " + data.getValueAt(i, 1));
+            }
+            out.close();
+        } catch (FileNotFoundException e) {
+            // Исключительную ситуацию "ФайлНеНайден" можно не
+            // обрабатывать, так как мы файл создаѐм, а не открываем
+        }
     }
+
+    protected void saveToCSVFile(File selectedFile) {
+        try {
+            FileWriter writer = new FileWriter(selectedFile);
+            for (int i = 0; i < data.getRowCount(); i++) {
+                writer.append(formatter.format(data.getValueAt(i, 0)));
+                writer.append(',');
+                writer.append(formatter.format(data.getValueAt(i, 1)));
+                writer.append(',');
+                writer.append(formatter.format(data.getValueAt(i, 2)));
+                writer.append(',');
+                writer.append(formatter.format(data.getValueAt(i, 3)));
+                writer.append('\n');
+            }
+            writer.close();
+        } catch (IOException e) {
+            // ошибка не возникает
+        }
+    }
+
+    public static void main(String[] args) {
+        // Если не задано ни одного аргумента командной строки -
+        // Продолжать вычисления невозможно, коэффиценты неизвестны
+        if (args.length == 0) {
+            System.out.println("Невозможно табулировать многочлен, для которого не задано ни одного коэффициента!");
+            System.exit(-1);
+        }
+        // Зарезервировать места в массиве коэффициентов столько, сколько аргументов командной строки
+        Double[] coefficients = new Double[args.length];
+        int i = 0;
+        try {
+            // Перебрать аргументы, пытаясь преобразовать их в Double
+            for (String arg: args) {
+                coefficients[i++] = Double.parseDouble(arg);
+            }
+        } catch (NumberFormatException ex) {
+            // Если преобразование невозможно - сообщить об ошибке и завершиться
+            System.out.println("Ошибка преобразования строки '" + args[i] + "' в число типа Double");
+            System.exit(-2);
+        }
+        // Создать экземпляр главного окна, передав ему коэффициенты
+        MainFrame frame = new MainFrame(coefficients);
+        // Задать действие, выполняемое при закрытии окна
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
