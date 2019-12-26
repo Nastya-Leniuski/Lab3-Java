@@ -99,4 +99,36 @@ public class MainFrame extends JFrame {
         saveToTextMenuItem = fileMenu.add(saveToTextAction);
         // По умолчанию пункт меню является недоступным (данных ещѐ нет)
         saveToTextMenuItem.setEnabled(false);
-}
+
+        // Создать новое "действие" по сохранению в текстовый файл
+        Action saveToGraphicsAction = new AbstractAction("Сохранить данные для построения графика") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (fileChooser == null) {
+                    fileChooser = new JFileChooser();
+                    fileChooser.setCurrentDirectory(new File("."));
+                }
+                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+                    saveToGraphicsFile(fileChooser.getSelectedFile());
+                }
+            }
+        };
+        saveToGraphicsMenuItem = fileMenu.add(saveToGraphicsAction);
+        saveToGraphicsMenuItem.setEnabled(false);
+
+        Action saveToCSVAction = new AbstractAction("Сохранить в .csv") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (fileChooser == null) {
+                    fileChooser = new JFileChooser();
+                    fileChooser.setCurrentDirectory(new File("."));
+                }
+                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+                    saveToCSVFile(fileChooser.getSelectedFile());
+                }
+            }
+        };
+        saveToCSVMenuItem = fileMenu.add(saveToCSVAction);
+        saveToCSVMenuItem.setEnabled(false);
+
+    }
