@@ -131,4 +131,53 @@ public class MainFrame extends JFrame {
         saveToCSVMenuItem = fileMenu.add(saveToCSVAction);
         saveToCSVMenuItem.setEnabled(false);
 
+        // Создать новое действие по поиску значений многочлена
+        Action searchValueAction = new AbstractAction("Найти значение многочлена") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                // Запросить пользователя ввести искомую строку
+                String value = JOptionPane.showInputDialog(MainFrame.this, "Введите значение для поиска", "Поиск значения", JOptionPane.QUESTION_MESSAGE);
+                // Установить введенное значение в качестве иголки
+                renderer.setNeedle(value);
+                // Обновить таблицу
+                getContentPane().repaint();
+            }
+        };
+        searchValueMenuItem = tableMenu.add(searchValueAction);
+        searchValueMenuItem.setEnabled(false);
+
+        Action searchPrimeNumberAction = new AbstractAction("Поиск простых чисел") {
+            public void actionPerformed(ActionEvent actionEvent) {
+                String[] searchArgs = new String[data.getRowCount()];
+                int countArgs = 0;
+                for (int i = 0; i <= data.getRowCount(); i++) {
+                    Double value = (Double) data.getValueAt(i, 1);
+                    int whole = (int) Math.round(value);
+                    if (Math.abs(value - whole) > 0.1 || whole <= 1 || whole % 2 == 0 || whole % 5 == 0) {
+                        continue;
+                    }
+                    boolean met = false;
+                    for (int j = 3; j <= Math.sqrt(whole); j += 2) {
+                        if (whole % j == 0) {
+                            met = true;
+                            break;
+                        }
+                    }
+                    if (met) {
+                        continue;
+                    }
+                    searchArgs[countArgs++] = formatter.format(value);
+                }
+                for (int i = 0; i < countArgs; i++) {
+                    System.out.println(searchArgs[i]);
+                }
+                renderer.searchPrime(searchArgs, countArgs);
+                renderer.setNeedle(null);
+                getContentPane().repaint();
+            }
+        };
+        searchPrimeNumberItem = tableMenu.add(searchPrimeNumberAction);
+        searchPrimeNumberItem.setEnabled(false);
+    }
+
     }
